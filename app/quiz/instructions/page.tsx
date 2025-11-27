@@ -19,7 +19,7 @@ export default function InstructionsPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <div className="max-w-2xl w-full p-6 bg-white rounded-lg shadow-md">
         <h1 className="text-3xl font-bold text-center mb-6">
-          NUST Entry Test Simulator
+          University Entry Test Simulator
         </h1>
         <p className="text-gray-700 mb-8 text-center">
           This simulator contains 200 multiple choice questions divided into

@@ -16,7 +16,7 @@ const Page = () => {
           </h2>
 
           <p className="mt-1 sm:mt-2 text-sm sm:text-base md:text-lg text-gray-700 max-w-md sm:max-w-2xl">
-            Maximize your nust entry test score with our mock tests, resources
+            Maximize your NUST Entry Test score with our mock tests, resources
             and expert strategies.
           </p>
 

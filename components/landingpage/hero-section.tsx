@@ -22,7 +22,7 @@ export function HeroSection() {
           <div className="space-y-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tighter mb-4 sm:text-5xl xl:text-6xl/none">
-                Entry test preparation Just Became Easy
+                Entry Test Preparation Just Became Easy
               </h1>
             </div>
             <div>
