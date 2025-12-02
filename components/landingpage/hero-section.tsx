@@ -22,12 +22,12 @@ export function HeroSection() {
           <div className="space-y-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tighter mb-4 sm:text-5xl xl:text-6xl/none">
-                Entry Test Preparation Just Became Easy
+                AI-Powered Entry Test Preparation
               </h1>
             </div>
             <div>
               <p className="text-muted-foreground mt-4 mb-4 md:text-xl">
-                Pakistan's first free entry test preparation platform designed to help you excel in your nust entry test preparation.
+                Adaptive learning platform for ECAT, NET, FAST-NU, and GIKI with personalized study plans and AI-driven feedback tailored to your strengths and weaknesses.
               </p>
             </div>
           </div>

@@ -65,11 +65,11 @@ export function FeedbackForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" placeholder="Muhammad" required />
+              <Input id="firstName" placeholder="First Name" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" placeholder="Usman" required />
+              <Input id="lastName" placeholder="Last Name" required />
             </div>
           </div>
 
@@ -80,7 +80,7 @@ export function FeedbackForm() {
 
           <div className="space-y-2">
             <Label htmlFor="phone">Phone Number (Optional)</Label>
-            <Input id="phone" type="tel" placeholder="+92 330 1358202" />
+            <Input id="phone" type="tel" placeholder="Phone Number" />
           </div>
 
           <div className="space-y-2">

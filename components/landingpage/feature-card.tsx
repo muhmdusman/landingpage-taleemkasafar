@@ -13,8 +13,8 @@ export function FeatureCard({ icon: Icon, title, description }: FeatureCardProps
       <div className="rounded-full bg-primary/10 p-3">
         <Icon className="h-6 w-6 text-primary" />
       </div>
-      <h3 className="text-xl font-bold">{title}</h3>
-      <p className="text-sm text-muted-foreground text-center">{description}</p>
+      <h3 className="text-xl font-bold text-center">{title}</h3>
+      <p className="text-sm text-muted-foreground text-center text-justify">{description}</p>
     </div>
   )
 }

@@ -12,8 +12,8 @@ export function PlatformSection() {
 
       <div className="container px-4 md:px-6 relative z-10">
         <SectionHeading
-          title="Our Platform"
-          description="Taleem Ka Safar is Pakistan's first free entry test preparation platform, designed to make quality education accessible to all."
+          title="AI-Powered Adaptive Learning"
+          description="Smart, personalized preparation for ECAT, NET, FAST-NU, and GIKI entry tests using Artificial Intelligence to analyze your performance and create targeted study plans."
         />
         <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2">
           <div className="relative">
@@ -26,8 +26,8 @@ export function PlatformSection() {
                       <div className="h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
                     </div>
                     <div>
-                      <h3 className="font-bold">Continuous Learning</h3>
-                      <p className="text-sm text-muted-foreground">Adaptive learning paths</p>
+                      <h3 className="font-bold">AI-Driven Analysis</h3>
+                      <p className="text-sm text-muted-foreground">Smart performance insights</p>
                     </div>
                   </div>
 
@@ -36,8 +36,8 @@ export function PlatformSection() {
                       <div className="h-6 w-6 bg-blue-500/60 rounded-md animate-pulse"></div>
                     </div>
                     <div>
-                      <h3 className="font-bold">Personalized Experience</h3>
-                      <p className="text-sm text-muted-foreground">Tailored to your needs</p>
+                      <h3 className="font-bold">Personalized Study Plans</h3>
+                      <p className="text-sm text-muted-foreground">Based on your weaknesses</p>
                     </div>
                   </div>
 
@@ -46,8 +46,8 @@ export function PlatformSection() {
                       <div className="h-6 w-6 bg-purple-500/60 rounded-full animate-bounce"></div>
                     </div>
                     <div>
-                      <h3 className="font-bold">Interactive Learning</h3>
-                      <p className="text-sm text-muted-foreground">Engage with content</p>
+                      <h3 className="font-bold">Targeted Feedback</h3>
+                      <p className="text-sm text-muted-foreground">Focus on weak areas</p>
                     </div>
                   </div>
                 </div>
@@ -57,13 +57,10 @@ export function PlatformSection() {
 
           <div className="space-y-4">
             <p className="text-muted-foreground">
-              We believe that every student deserves access to high-quality test preparation resources regardless of
-              their financial background. Our platform provides comprehensive test preparation materials, practice
-              tests, and performance analytics to help students achieve their academic goals.
+              Unlike traditional platforms that provide the same material to everyone, our AI-powered system adapts to your individual learning needs. Take tests, receive detailed performance analysis, and get personalized study recommendations based on your weak areas.
             </p>
             <p className="text-muted-foreground">
-              Whether you're preparing for entry tests, board exams, or competitive assessments, Taleem Ka Safar is your
-              companion throughout your educational journey.
+              Our AI algorithms analyze your test results to generate targeted study plans with smart feedback, ensuring you focus on what matters most for your success in ECAT, NET, FAST-NU, and GIKI entry tests.
             </p>
 
             <div className="pt-4">

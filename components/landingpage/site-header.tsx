@@ -5,10 +5,10 @@
 import type React from "react"
 import Link from "next/link"
 import { useEffect, useState } from "react" // React hooks for state and side effects
-import { BookOpen } from "lucide-react" // Icon component
+import { BookOpen, Menu, X } from "lucide-react" // Icon component
 import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion" // Animation library
-import { SignInButton, useAuth } from "@clerk/nextjs" // Authentication hooks and components
+import { motion, AnimatePresence } from "framer-motion" // Animation library
+import { SignInButton, UserButton, useAuth } from "@clerk/nextjs" // Authentication hooks and components
 
 export function SiteHeader() {
   // useState Hook:
@@ -16,6 +16,7 @@ export function SiteHeader() {
   // - Initial value is false
   // - Used to handle client-side hydration
   const [mounted, setMounted] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // useAuth Hook:
   // - Provided by Clerk for authentication
@@ -34,11 +35,11 @@ export function SiteHeader() {
   // Navigation configuration
   // Array of objects defining the navigation menu structure
   const menuItems = [
-    { href: "#home", label: "Home" },
-    { href: "#platform", label: "Platform" },
-    { href: "#features", label: "Features" },
-    { href: "#strategies", label: "Strategies" },
-    { href: "#feedback", label: "Feedback" },
+    { href: "/#home", label: "Home" },
+    { href: "/#platform", label: "Platform" },
+    { href: "/#features", label: "Features" },
+    { href: "/#strategies", label: "Strategies" },
+    { href: "/#feedback", label: "Feedback" },
   ]
 
   return (
@@ -73,19 +74,89 @@ export function SiteHeader() {
 
         {/* Authentication Button Section */}
         <div className="flex items-center gap-2">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+          {isSignedIn ? (
+            <>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.05 }}
+              >
+                <Link href="/dashboard">
+                  <Button variant="default" size="sm">
+                    Dashboard
+                  </Button>
+                </Link>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <Link href="/lms">
+                  <Button variant="outline" size="sm">
+                    LMS
+                  </Button>
+                </Link>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.15 }}
+              >
+                <UserButton afterSignOutUrl="/" />
+              </motion.div>
+            </>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <Link href="/sign-in">
+                <Button variant="outline" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+            </motion.div>
+          )}
+
+          {/* Mobile Menu Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            <Link href={isSignedIn ? "/lms" : "/sign-in"}>
-              <Button variant="outline" size="sm">
-                {isSignedIn ? "LMS" : "Sign In"}
-              </Button>
-            </Link>
-          </motion.div>
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden border-t bg-background"
+          >
+            <nav className="container py-4 flex flex-col gap-3">
+              {menuItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm font-medium transition-colors hover:text-primary py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   )
 }

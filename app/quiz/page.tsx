@@ -45,7 +45,10 @@ export default function QuizPage() {
                 onChange={(e) => setTestType(e.target.value)}
               >
                 <option value="" disabled>Choose a test</option>
-                <option value="nust">NUST Mock Test</option>
+                <option value="nust">NUST Test</option>
+                <option value="uet">UET Test</option>
+                <option value="fast">FAST Test</option>
+                <option value="giki">GIKI Test</option>
               </select>
             </div>
 
