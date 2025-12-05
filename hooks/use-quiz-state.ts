@@ -36,12 +36,75 @@ export default function useQuizState(initialQuestions: Question[]) {
     navigateToLast,
   } = useQuizNavigation(initialQuestions)
 
-  const submitTest = () => {
+  const submitTest = async () => {
     // Calculate scores
     const results = calculateScores()
 
-    // Save results to localStorage
-    localStorage.setItem("quizResults", JSON.stringify(results))
+    // Get test metadata
+    const testType = sessionStorage.getItem('testType') || 'ECAT'
+    const startTime = sessionStorage.getItem('quizStartTime')
+    const timeTaken = startTime ? Math.floor((Date.now() - parseInt(startTime)) / 1000) : 0
+
+    console.log('=== QUIZ SUBMISSION DEBUG ===');
+    console.log('Total questions:', initialQuestions.length);
+    console.log('Saved answers object:', savedAnswers);
+    console.log('Saved answers count:', Object.keys(savedAnswers).length);
+    console.log('Sample savedAnswers entries:', Object.entries(savedAnswers).slice(0, 5));
+
+    // Prepare answers for AI analysis
+    const answersForAI = initialQuestions.map((question, index) => {
+      const userAnswer = savedAnswers[index];
+      const isAttempted = userAnswer !== undefined;
+      const isCorrect = isAttempted && userAnswer === question.correctAnswer;
+      
+      if (index < 3 || isAttempted) {
+        console.log(`Question ${index + 1}:`, {
+          subject: question.subject,
+          correctAnswer: question.correctAnswer,
+          userAnswer,
+          isAttempted,
+          isCorrect
+        });
+      }
+      
+      return {
+        questionId: index + 1,
+        subject: question.subject,
+        userAnswer: isAttempted ? userAnswer : null,
+        correctAnswer: question.correctAnswer,
+        isCorrect,
+      };
+    });
+
+    console.log('Prepared answers (first 3):', answersForAI.slice(0, 3));
+    console.log('Total correct:', answersForAI.filter(a => a.isCorrect).length);
+    console.log('=== END DEBUG ===');
+
+    try {
+      // Submit to AI feedback API
+      const response = await fetch('/api/submit-test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          testType,
+          testName: `${testType} Practice Test`,
+          timeTaken,
+          answers: answersForAI,
+        }),
+      })
+
+      const aiResult = await response.json()
+
+      // Save both basic results and AI feedback
+      localStorage.setItem("quizResults", JSON.stringify({
+        ...results,
+        aiAnalysis: aiResult.success ? aiResult : null,
+      }))
+    } catch (error) {
+      console.error('Error getting AI feedback:', error)
+      // Still save basic results even if AI fails
+      localStorage.setItem("quizResults", JSON.stringify(results))
+    }
 
     // Clear session
     clearSession()

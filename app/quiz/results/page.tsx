@@ -4,23 +4,62 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+import { CheckCircle2, XCircle, AlertCircle, TrendingUp, BookOpen, Target } from "lucide-react"
 
 interface QuizResults {
   total: number
   math: number
   physics: number
   english: number
+  chemistry?: number
+  aiAnalysis?: {
+    success: boolean
+    metrics: {
+      totalQuestions: number
+      correctAnswers: number
+      incorrectAnswers: number
+      skippedAnswers: number
+      accuracy: string
+      score: string
+      percentage: string
+      subjectWisePerformance: Record<string, { correct: number; total: number; accuracy: number }>
+      weakTopics: string[]
+    }
+    aiFeedback: {
+      overallPerformance: string
+      strengths: string[]
+      weaknesses: string[]
+      studyRecommendations: string[]
+      priorityTopics: string[]
+      estimatedImprovement: string
+      nextSteps: string[]
+    }
+  }
 }
 
 export default function ResultsPage() {
   const [results, setResults] = useState<QuizResults | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const storedResults = localStorage.getItem("quizResults")
     if (storedResults) {
       setResults(JSON.parse(storedResults))
     }
+    setLoading(false)
   }, [])
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p>Loading your results...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!results) {
     return (
@@ -36,81 +75,254 @@ export default function ResultsPage() {
     )
   }
 
+  const aiAnalysis = results.aiAnalysis
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Quiz Results</CardTitle>
-          <CardDescription>Your performance in the NUST Entry Test</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h3 className="font-semibold text-lg mb-2">Total Score</h3>
-                <div className="text-3xl font-bold text-blue-600">{results.total} / 200</div>
-                <div className="text-sm text-gray-500 mt-1">{((results.total / 200) * 100).toFixed(2)}%</div>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 py-8">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Quiz Results</h1>
+          <p className="text-gray-600">Your performance analysis powered by AI</p>
+        </div>
 
-              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                <h3 className="font-semibold text-lg mb-2">Mathematics</h3>
-                <div className="text-3xl font-bold text-green-600">{results.math} / 100</div>
-                <div className="text-sm text-gray-500 mt-1">{((results.math / 100) * 100).toFixed(2)}%</div>
-              </div>
-
-              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                <h3 className="font-semibold text-lg mb-2">Physics</h3>
-                <div className="text-3xl font-bold text-purple-600">{results.physics} / 60</div>
-                <div className="text-sm text-gray-500 mt-1">{((results.physics / 60) * 100).toFixed(2)}%</div>
-              </div>
-
-              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <h3 className="font-semibold text-lg mb-2">English</h3>
-                <div className="text-3xl font-bold text-amber-600">{results.english} / 40</div>
-                <div className="text-sm text-gray-500 mt-1">{((results.english / 40) * 100).toFixed(2)}%</div>
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <h3 className="font-semibold text-lg mb-2">Performance Summary</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Mathematics</span>
-                  <div className="w-64 bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className="bg-green-600 h-2.5 rounded-full"
-                      style={{ width: `${(results.math / 100) * 100}%` }}
-                    ></div>
-                  </div>
+        {/* Quick Stats */}
+        {aiAnalysis?.success && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <CheckCircle2 className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Correct</p>
+                  <p className="text-2xl font-bold text-green-600">{aiAnalysis.metrics.correctAnswers}</p>
                 </div>
-                <div className="flex justify-between">
-                  <span>Physics</span>
-                  <div className="w-64 bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className="bg-purple-600 h-2.5 rounded-full"
-                      style={{ width: `${(results.physics / 60) * 100}%` }}
-                    ></div>
-                  </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <XCircle className="h-8 w-8 text-red-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Incorrect</p>
+                  <p className="text-2xl font-bold text-red-600">{aiAnalysis.metrics.incorrectAnswers}</p>
                 </div>
-                <div className="flex justify-between">
-                  <span>English</span>
-                  <div className="w-64 bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className="bg-amber-600 h-2.5 rounded-full"
-                      style={{ width: `${(results.english / 40) * 100}%` }}
-                    ></div>
-                  </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <AlertCircle className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Skipped</p>
+                  <p className="text-2xl font-bold text-yellow-600">{aiAnalysis.metrics.skippedAnswers}</p>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <TrendingUp className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Accuracy</p>
+                  <p className="text-2xl font-bold text-blue-600">{aiAnalysis.metrics.percentage}</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <Link href="/">
-            <Button>Back to Home</Button>
-          </Link>
-        </CardFooter>
-      </Card>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Subject-wise Performance */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Subject-wise Performance</CardTitle>
+              <CardDescription>Your score in each subject</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {aiAnalysis?.success ? (
+                <div className="space-y-4">
+                  {Object.entries(aiAnalysis.metrics.subjectWisePerformance).map(([subject, data]) => (
+                    <div key={subject}>
+                      <div className="flex justify-between mb-1">
+                        <span className="font-medium">{subject}</span>
+                        <span className="text-sm text-gray-600">
+                          {data.correct}/{data.total} ({data.accuracy.toFixed(0)}%)
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div
+                          className={`h-2.5 rounded-full ${
+                            data.accuracy >= 80 ? 'bg-green-600' :
+                            data.accuracy >= 60 ? 'bg-yellow-600' : 'bg-red-600'
+                          }`}
+                          style={{ width: `${data.accuracy}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="font-medium">Mathematics</span>
+                      <span className="text-sm">{results.math} / 100</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div className="bg-green-600 h-2.5 rounded-full" style={{ width: `${(results.math / 100) * 100}%` }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="font-medium">Physics</span>
+                      <span className="text-sm">{results.physics} / 60</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div className="bg-purple-600 h-2.5 rounded-full" style={{ width: `${(results.physics / 60) * 100}%` }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="font-medium">English</span>
+                      <span className="text-sm">{results.english} / 40</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div className="bg-amber-600 h-2.5 rounded-full" style={{ width: `${(results.english / 40) * 100}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* AI Performance Analysis */}
+          {aiAnalysis?.success && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  AI Performance Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Alert>
+                  <AlertTitle>Overall Assessment</AlertTitle>
+                  <AlertDescription className="mt-2 text-sm">
+                    {aiAnalysis.aiFeedback.overallPerformance}
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* AI Feedback Sections */}
+        {aiAnalysis?.success && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Strengths */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-green-700">
+                  <CheckCircle2 className="h-5 w-5" />
+                  Your Strengths
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {aiAnalysis.aiFeedback.strengths.map((strength, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{strength}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Weaknesses */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-orange-700">
+                  <AlertCircle className="h-5 w-5" />
+                  Areas for Improvement
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {aiAnalysis.aiFeedback.weaknesses.map((weakness, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{weakness}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Study Recommendations */}
+        {aiAnalysis?.success && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                Personalized Study Plan
+              </CardTitle>
+              <CardDescription>
+                {aiAnalysis.aiFeedback.estimatedImprovement}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h3 className="font-semibold mb-3">Recommended Actions</h3>
+                <div className="grid gap-2">
+                  {aiAnalysis.aiFeedback.studyRecommendations.map((rec, idx) => (
+                    <div key={idx} className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
+                      <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs flex-shrink-0">
+                        {idx + 1}
+                      </div>
+                      <span className="text-sm">{rec}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-3">Priority Topics</h3>
+                <div className="flex flex-wrap gap-2">
+                  {aiAnalysis.aiFeedback.priorityTopics.map((topic, idx) => (
+                    <Badge key={idx} variant="outline" className="text-sm">
+                      {topic}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-3">Next Steps</h3>
+                <ol className="list-decimal list-inside space-y-2">
+                  {aiAnalysis.aiFeedback.nextSteps.map((step, idx) => (
+                    <li key={idx} className="text-sm text-gray-700">{step}</li>
+                  ))}
+                </ol>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Actions */}
+        <Card>
+          <CardFooter className="flex justify-center gap-4 pt-6">
+            <Link href="/quiz">
+              <Button>Take Another Test</Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button variant="outline">View Dashboard</Button>
+            </Link>
+            <Link href="/">
+              <Button variant="outline">Back to Home</Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   )
 }
