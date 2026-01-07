@@ -1,10 +1,13 @@
 export interface Question {
   id: number
+  dbId?: string // UUID from database
+  questionNumber?: number
   subject: string
   section: number
   question: string
   options: string[]
   correctAnswer: number
+  correctOption?: string // A, B, C, or D
 }
 
 export interface QuizResults {

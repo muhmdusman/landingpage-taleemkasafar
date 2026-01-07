@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react"
-import mcqData from "@/data/mcq.json"
 import FlipClock from "@/components/quiz/flip-clock"
 import { Button } from "@/components/ui/button"
 import useQuizState from "@/hooks/use-quiz-state"
@@ -18,6 +17,7 @@ export default function QuizPage() {
   const [loading, setLoading] = useState(true)
   const [questions, setQuestions] = useState<Question[]>([])
   const [filterType, setFilterType] = useState("all")
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
 useEffect(() => {
@@ -30,11 +30,33 @@ useEffect(() => {
 }, [router])
 
 
-  // Initialize quiz data
+  // Initialize quiz data - fetch from database
   useEffect(() => {
-    // Load questions from JSON
-    setQuestions(mcqData as Question[])
-    setLoading(false)
+    const fetchQuestions = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/questions')
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch questions')
+        }
+        
+        const data = await response.json()
+        
+        if (data.error) {
+          throw new Error(data.error)
+        }
+        
+        setQuestions(data.questions)
+      } catch (err) {
+        console.error('Error fetching questions:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load questions')
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchQuestions()
   }, [])
 
   const {
@@ -67,7 +89,30 @@ useEffect(() => {
     { value: "review", label: "Marked for Review" },
   ]
 
-  if (loading || !currentQuestion) {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p>Loading quiz...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
+          <p className="mb-4">{error}</p>
+          <Button onClick={() => router.push('/quiz')}>Go Back</Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!currentQuestion) {
     return <div className="flex items-center justify-center min-h-screen">Loading quiz...</div>
   }
 

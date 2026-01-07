@@ -36,6 +36,14 @@ interface QuizResults {
       estimatedImprovement: string
       nextSteps: string[]
     }
+    detailedAnswers?: Array<{
+      questionId: number
+      subject: string
+      userAnswer: number | null
+      correctAnswer: number
+      isCorrect: boolean
+      isAttempted: boolean
+    }>
   }
 }
 
@@ -303,6 +311,83 @@ export default function ResultsPage() {
                     <li key={idx} className="text-sm text-gray-700">{step}</li>
                   ))}
                 </ol>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Detailed Answer Review */}
+        {aiAnalysis?.success && aiAnalysis.detailedAnswers && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Answer Review</CardTitle>
+              <CardDescription>Review your answers and correct options</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {aiAnalysis.detailedAnswers.map((answer) => {
+                  const optionLabels = ['A', 'B', 'C', 'D'];
+                  return (
+                    <div 
+                      key={answer.questionId}
+                      className={`p-3 rounded-lg border-2 ${
+                        answer.isCorrect 
+                          ? 'bg-green-50 border-green-200' 
+                          : answer.isAttempted 
+                            ? 'bg-red-50 border-red-200' 
+                            : 'bg-gray-50 border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold">Q{answer.questionId}</span>
+                            <Badge variant="outline" className="text-xs">{answer.subject}</Badge>
+                            {answer.isCorrect && (
+                              <CheckCircle2 className="h-4 w-4 text-green-600" />
+                            )}
+                            {!answer.isCorrect && answer.isAttempted && (
+                              <XCircle className="h-4 w-4 text-red-600" />
+                            )}
+                            {!answer.isAttempted && (
+                              <AlertCircle className="h-4 w-4 text-gray-400" />
+                            )}
+                          </div>
+                          <div className="text-sm space-y-1">
+                            {answer.isAttempted ? (
+                              <>
+                                <p>
+                                  <span className="text-gray-600">Your Answer: </span>
+                                  <span className={answer.isCorrect ? 'text-green-700 font-medium' : 'text-red-700 font-medium'}>
+                                    {optionLabels[answer.userAnswer!]}
+                                  </span>
+                                </p>
+                                {!answer.isCorrect && (
+                                  <p>
+                                    <span className="text-gray-600">Correct Answer: </span>
+                                    <span className="text-green-700 font-medium">
+                                      {optionLabels[answer.correctAnswer]}
+                                    </span>
+                                  </p>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-gray-500">Not Attempted</p>
+                                <p>
+                                  <span className="text-gray-600">Correct Answer: </span>
+                                  <span className="text-green-700 font-medium">
+                                    {optionLabels[answer.correctAnswer]}
+                                  </span>
+                                </p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

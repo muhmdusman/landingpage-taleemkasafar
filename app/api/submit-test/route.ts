@@ -80,7 +80,16 @@ export async function POST(request: NextRequest) {
         testName,
         submittedAt: new Date().toISOString(),
         userId
-      }
+      },
+      // Include detailed answers with correct options for review
+      detailedAnswers: answers.map((answer: any) => ({
+        questionId: answer.questionId,
+        subject: answer.subject,
+        userAnswer: answer.userAnswer,
+        correctAnswer: answer.correctAnswer,
+        isCorrect: answer.isCorrect,
+        isAttempted: answer.userAnswer !== null
+      }))
     };
 
     return NextResponse.json(response);
