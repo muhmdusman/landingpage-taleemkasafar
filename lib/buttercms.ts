@@ -2,12 +2,16 @@ import "server-only"
 
 import Butter from "buttercms"
 
-const apiToken = process.env.BUTTER_CMS_API_TOKEN
+let butterClient: ReturnType<typeof Butter> | null = null
 
-if (!apiToken) {
-  throw new Error("Missing BUTTER_CMS_API_TOKEN environment variable")
+export function getButterClient() {
+  const apiToken = process.env.BUTTER_CMS_API_TOKEN
+
+  if (!apiToken) {
+    throw new Error("Missing BUTTER_CMS_API_TOKEN environment variable")
+  }
+
+  butterClient ??= Butter(apiToken)
+
+  return butterClient
 }
-
-const butter = Butter(apiToken)
-
-export default butter

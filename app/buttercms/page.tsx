@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { AlertCircle, ArrowUpRight } from "lucide-react"
-import butter from "@/lib/buttercms"
+import { getButterClient } from "@/lib/buttercms"
 import { SiteFooter } from "@/components/landingpage/site-footer"
 import { SiteHeader } from "@/components/landingpage/site-header"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -38,6 +38,8 @@ type ButterFetchError = {
 }
 
 async function getButterContent() {
+  const butter = getButterClient()
+
   const [postsResult, pageResult] = await Promise.allSettled([
     butter.post.list({ page: 1, page_size: 3, exclude_body: true }),
     butter.page.retrieve<Record<string, unknown>, "*", "landing-page">("*", "landing-page", {

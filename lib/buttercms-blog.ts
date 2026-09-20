@@ -1,6 +1,6 @@
 import "server-only"
 
-import butter from "@/lib/buttercms"
+import { getButterClient } from "@/lib/buttercms"
 
 export type ButterBlogPost = {
   authorName: string
@@ -33,6 +33,7 @@ type ButterPost = {
 }
 
 export async function getButterBlogPosts(limit = 12) {
+  const butter = getButterClient()
   const response = await butter.post.list({
     page: 1,
     page_size: limit,
@@ -43,6 +44,8 @@ export async function getButterBlogPosts(limit = 12) {
 }
 
 export async function getButterBlogPost(slug: string) {
+  const butter = getButterClient()
+
   try {
     const response = await butter.post.retrieve(slug)
     const post = response.data?.data
