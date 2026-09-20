@@ -2,28 +2,35 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import {SiteHeader} from "@/components/landingpage/site-header"
-import {SiteFooter} from "@/components/landingpage/site-footer"
-import { getBlogPosts, getBlogBySlug } from "@/lib/blog-utils"
+import { SiteHeader } from "@/components/landingpage/site-header"
+import { SiteFooter } from "@/components/landingpage/site-footer"
+import { getButterBlogPost, getButterBlogPosts } from "@/lib/buttercms-blog"
 import { CalendarIcon, User2Icon, Clock3Icon } from "lucide-react"
 
-export async function generateStaticParams() {
-  const posts = getBlogPosts()
+export const dynamic = "force-dynamic"
+export const dynamicParams = true
 
-  return posts.map((post) => ({
-    slug: post.slug,
-  }))
+function formatDate(date: string | null) {
+  if (!date) {
+    return "Unpublished"
+  }
+
+  return new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(date))
 }
 
 export default async function BlogPost({ params }: { params: { slug: string } }) {
-  const { slug } = await Promise.resolve(params);
-  const post = getBlogBySlug(slug)
+  const { slug } = await Promise.resolve(params)
+  const post = await getButterBlogPost(slug)
 
   if (!post) {
     notFound()
   }
 
-  const relatedPosts = getBlogPosts()
+  const relatedPosts = (await getButterBlogPosts(4))
     .filter((p) => p.slug !== slug)
     .slice(0, 3)
 
@@ -42,11 +49,11 @@ export default async function BlogPost({ params }: { params: { slug: string } })
               <div className="flex items-center justify-center gap-4 text-sm">
                 <div className="flex items-center gap-1">
                   <User2Icon className="h-4 w-4" />
-                  <span>{post.author}</span>
+                  <span>{post.authorName}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <CalendarIcon className="h-4 w-4" />
-                  <span>{new Date(post.date).toLocaleDateString()}</span>
+                  <span>{formatDate(post.date)}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock3Icon className="h-4 w-4" />
@@ -64,17 +71,20 @@ export default async function BlogPost({ params }: { params: { slug: string } })
               <div>
                 <div className="aspect-video relative mb-8 overflow-hidden rounded-lg">
                   <img
-                    src={post.coverImage || "/placeholder.svg"}
-                    alt={post.title}
+                    src={post.featuredImage || "/placeholder.svg"}
+                    alt={post.featuredImageAlt}
                     className="object-cover w-full h-full"
                   />
                 </div>
 
-                <div className="prose prose-emerald max-w-none">
-                  {post.content.split("\n\n").map((paragraph, idx) => (
-                    <p key={idx}>{paragraph}</p>
-                  ))}
-                </div>
+                {post.body ? (
+                  <div
+                    className="prose prose-emerald max-w-none"
+                    dangerouslySetInnerHTML={{ __html: post.body }}
+                  />
+                ) : (
+                  <p className="text-muted-foreground">{post.excerpt || "This post does not have body content yet."}</p>
+                )}
 
                 <div className="mt-8 pt-8 border-t">
                   <div className="flex items-center justify-between">
@@ -161,8 +171,8 @@ export default async function BlogPost({ params }: { params: { slug: string } })
                 <Card key={blog.slug} className="overflow-hidden">
                   <div className="aspect-video relative">
                     <img
-                      src={blog.coverImage || "/placeholder.svg"}
-                      alt={blog.title}
+                      src={blog.featuredImage || "/placeholder.svg"}
+                      alt={blog.featuredImageAlt}
                       className="object-cover w-full h-full"
                     />
                   </div>
